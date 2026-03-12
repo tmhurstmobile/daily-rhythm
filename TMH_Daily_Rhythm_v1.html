@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a1612">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>TMH · Daily Rhythm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:       #1a1612;
+  --ink-mid:   #3d3530;
+  --ink-soft:  #6b5f57;
+  --ink-pale:  #a89890;
+  --parchment: #f5f0e8;
+  --cream:     #faf7f2;
+  --warm-line: #e8e0d2;
+  --gold:      #c9a84c;
+  --gold-dim:  #a07830;
+  --red-mark:  #8b3a2a;
+  --blue-mark: #2a4a6b;
+  --green:     #3a6b4a;
+  --shadow:    rgba(26,22,18,0.12);
+
+  --cat-spiritual: #6b4a7a;
+  --cat-family:    #3a6b4a;
+  --cat-writing:   #2a4a6b;
+  --cat-homestead: #7a5a2a;
+  --cat-health:    #6b3a2a;
+  --cat-admin:     #4a4a6b;
+  --cat-church:    #7a2a4a;
+  --cat-rest:      #2a5a6b;
+  --cat-flex:      #5a6b2a;
+
+  font-size: 16px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--parchment);
+  color: var(--ink);
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-weight: 300;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ─── LAYOUT ───────────────────────────────────────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── HEADER ────────────────────────────────────────────── */
+#header {
+  background: var(--ink);
+  color: var(--parchment);
+  padding: 12px 16px 10px;
+  flex-shrink: 0;
+  border-bottom: 2px solid var(--gold);
+}
+#header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#title-block {}
+#app-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+#app-subtitle {
+  font-size: 0.7rem;
+  color: var(--ink-pale);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+#date-display {
+  text-align: right;
+}
+#date-day {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: var(--parchment);
+}
+#date-full {
+  font-size: 0.7rem;
+  color: var(--ink-pale);
+  letter-spacing: 0.06em;
+}
+
+/* ─── TAB BAR ───────────────────────────────────────────── */
+#tabs {
+  display: flex;
+  background: var(--ink-mid);
+  flex-shrink: 0;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px 4px 8px;
+  border: none;
+  background: transparent;
+  color: var(--ink-pale);
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  border-bottom: 2px solid transparent;
+  position: relative;
+}
+.tab-btn.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  background: rgba(201,168,76,0.07);
+}
+.tab-badge {
+  display: inline-block;
+  background: var(--red-mark);
+  color: #fff;
+  font-size: 0.6rem;
+  border-radius: 8px;
+  padding: 1px 5px;
+  margin-left: 4px;
+  vertical-align: middle;
+  font-style: normal;
+}
+
+/* ─── MAIN CONTENT ──────────────────────────────────────── */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ─── SCHEDULE PANEL ─────────────────────────────────────── */
+#schedule-intro {
+  padding: 12px 16px 8px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--warm-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+#schedule-day-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--ink-mid);
+}
+#completion-pill {
+  background: var(--ink);
+  color: var(--gold);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.block-card {
+  border-bottom: 1px solid var(--warm-line);
+  background: var(--cream);
+  transition: background 0.15s;
+}
+.block-card.completed { background: #f0f5f1; }
+.block-card.cancelled { background: #fdf5f5; }
+.block-card.deferred  { background: #f5f5fd; }
+
+.block-main {
+  display: flex;
+  align-items: stretch;
+  min-height: 56px;
+  cursor: pointer;
+  padding: 10px 14px 10px 0;
+}
+.block-cat-bar {
+  width: 4px;
+  border-radius: 2px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  align-self: stretch;
+  margin-top: 0;
+  min-height: 100%;
+}
+.block-body {
+  flex: 1;
+  min-width: 0;
+}
+.block-time {
+  font-size: 0.67rem;
+  color: var(--ink-pale);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1px;
+}
+.block-activity {
+  font-size: 0.95rem;
+  color: var(--ink);
+  font-weight: 400;
+  line-height: 1.3;
+}
+.block-category-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  opacity: 0.75;
+}
+.block-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-left: 14px;
+  flex-shrink: 0;
+}
+.status-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: transform 0.12s, opacity 0.12s;
+  background: transparent;
+  opacity: 0.35;
+}
+.status-icon:active { transform: scale(0.9); }
+.status-icon.active { opacity: 1; }
+.status-icon.done-btn.active   { background: rgba(58,107,74,0.15); }
+.status-icon.cancel-btn.active { background: rgba(139,58,42,0.12); }
+.status-icon.defer-btn.active  { background: rgba(42,74,107,0.12); }
+
+/* note expand area */
+.block-note-area {
+  display: none;
+  padding: 4px 14px 12px 28px;
+  background: inherit;
+}
+.block-note-area.open { display: block; }
+.block-note-label {
+  font-size: 0.67rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-pale);
+  margin-bottom: 4px;
+}
+.block-note-input {
+  width: 100%;
+  min-height: 56px;
+  border: 1px solid var(--warm-line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: var(--parchment);
+  resize: none;
+  line-height: 1.5;
+}
+.block-note-input:focus {
+  outline: none;
+  border-color: var(--gold-dim);
+}
+.block-original-note {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* schedule footer */
+#schedule-footer {
+  padding: 16px;
+  background: var(--parchment);
+}
+#submit-day-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--ink);
+  color: var(--gold);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#submit-day-btn:active { background: var(--ink-mid); }
+#submit-status {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  min-height: 1.2em;
+  font-style: italic;
+}
+
+/* ─── CAPTURE LOG PANEL ─────────────────────────────────── */
+#capture-header {
+  padding: 12px 16px 8px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--warm-line);
+}
+#capture-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  font-style: italic;
+}
+#capture-header p {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* quick entry form */
+#quick-entry {
+  padding: 12px 16px;
+  background: var(--parchment);
+  border-bottom: 2px solid var(--warm-line);
+}
+#entry-header-input {
+  width: 100%;
+  border: 1px solid var(--warm-line);
+  border-radius: 6px 6px 0 0;
+  border-bottom: none;
+  padding: 10px 12px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--cream);
+}
+#entry-header-input:focus { outline: none; border-color: var(--gold-dim); }
+#entry-header-input::placeholder { color: var(--ink-pale); font-weight: 300; }
+
+#entry-body-input {
+  width: 100%;
+  min-height: 64px;
+  border: 1px solid var(--warm-line);
+  border-radius: 0 0 6px 6px;
+  padding: 8px 12px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--cream);
+  resize: none;
+  line-height: 1.5;
+}
+#entry-body-input:focus { outline: none; border-color: var(--gold-dim); }
+#entry-body-input::placeholder { color: var(--ink-pale); font-style: italic; }
+
+#entry-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+#entry-type-select {
+  flex: 1;
+  padding: 9px 10px;
+  border: 1px solid var(--warm-line);
+  border-radius: 6px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  background: var(--cream);
+  appearance: none;
+  -webkit-appearance: none;
+}
+#entry-type-select:focus { outline: none; border-color: var(--gold-dim); }
+#add-entry-btn {
+  padding: 9px 18px;
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+#add-entry-btn:active { background: var(--gold-dim); color: var(--cream); }
+
+/* entry list */
+#capture-list {
+  padding: 8px 0 80px;
+}
+.capture-entry {
+  border-bottom: 1px solid var(--warm-line);
+  background: var(--cream);
+}
+.entry-top {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  gap: 10px;
+}
+.entry-type-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.entry-header-text {
+  flex: 1;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.entry-meta {
+  font-size: 0.65rem;
+  color: var(--ink-pale);
+  text-align: right;
+  flex-shrink: 0;
+}
+.entry-chevron {
+  color: var(--ink-pale);
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.entry-chevron.open { transform: rotate(180deg); }
+.entry-body {
+  display: none;
+  padding: 0 14px 12px 32px;
+  font-size: 0.85rem;
+  color: var(--ink-mid);
+  line-height: 1.55;
+}
+.entry-body.open { display: block; }
+.entry-type-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.entry-delete {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.7rem;
+  color: var(--red-mark);
+  cursor: pointer;
+  opacity: 0.7;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 0;
+}
+
+#no-entries {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--ink-pale);
+  font-style: italic;
+  font-size: 0.88rem;
+}
+
+/* ─── SUMMARY PANEL ──────────────────────────────────────── */
+#summary-panel {
+  padding: 16px;
+}
+#summary-panel h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.summary-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--warm-line);
+  font-size: 0.9rem;
+}
+.summary-stat-label { color: var(--ink-soft); }
+.summary-stat-value { font-weight: 600; color: var(--ink); }
+.summary-section {
+  margin-top: 18px;
+  margin-bottom: 10px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-pale);
+  border-bottom: 1px solid var(--warm-line);
+  padding-bottom: 4px;
+}
+.summary-block-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--warm-line);
+  font-size: 0.83rem;
+}
+.summary-status-badge {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.badge-completed { background: rgba(58,107,74,0.15); color: var(--green); }
+.badge-cancelled { background: rgba(139,58,42,0.12); color: var(--red-mark); }
+.badge-deferred  { background: rgba(42,74,107,0.12); color: var(--blue-mark); }
+.badge-pending   { background: rgba(106,96,87,0.1);  color: var(--ink-pale); }
+.summary-block-name { flex: 1; color: var(--ink-mid); }
+.summary-block-note {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin-top: 2px;
+}
+#summary-submit-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  background: var(--ink);
+  color: var(--gold);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+#summary-submit-status {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  font-style: italic;
+  min-height: 1.2em;
+}
+
+/* ─── SETTINGS PANEL ─────────────────────────────────────── */
+#settings-panel {
+  padding: 16px;
+}
+#settings-panel h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.settings-group {
+  margin-bottom: 20px;
+}
+.settings-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-pale);
+  border-bottom: 1px solid var(--warm-line);
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+}
+.settings-field label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.settings-field input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--warm-line);
+  border-radius: 6px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: var(--cream);
+  margin-bottom: 10px;
+}
+.settings-field input:focus { outline: none; border-color: var(--gold-dim); }
+.settings-save-btn {
+  padding: 10px 20px;
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.settings-note {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────────── */
+#content::-webkit-scrollbar { width: 4px; }
+#content::-webkit-scrollbar-track { background: transparent; }
+#content::-webkit-scrollbar-thumb { background: var(--warm-line); border-radius: 2px; }
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div id="header-top">
+      <div id="title-block">
+        <div id="app-name">TMH · Daily Rhythm</div>
+        <div id="app-subtitle">Life &amp; Productivity Tracker</div>
+      </div>
+      <div id="date-display">
+        <div id="date-day"></div>
+        <div id="date-full"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs">
+    <button class="tab-btn active" onclick="showTab('schedule')">Schedule</button>
+    <button class="tab-btn" onclick="showTab('capture')">Capture <span id="capture-badge" class="tab-badge" style="display:none">0</span></button>
+    <button class="tab-btn" onclick="showTab('summary')">Summary</button>
+    <button class="tab-btn" onclick="showTab('settings')">Settings</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- SCHEDULE PANEL -->
+    <div id="panel-schedule" class="panel active">
+      <div id="schedule-intro">
+        <div id="schedule-day-label"></div>
+        <div id="completion-pill">0 / 0 done</div>
+      </div>
+      <div id="block-list"></div>
+      <div id="schedule-footer">
+        <button id="submit-day-btn" onclick="submitDaySummary()">Review &amp; Submit Day →</button>
+        <div id="submit-status"></div>
+      </div>
+    </div>
+
+    <!-- CAPTURE PANEL -->
+    <div id="panel-capture" class="panel">
+      <div id="capture-header">
+        <h2>Capture Log</h2>
+        <p>Running memo — new commitments, action items, deferrals, anything that would otherwise fall through the cracks.</p>
+      </div>
+      <div id="quick-entry">
+        <input type="text" id="entry-header-input" placeholder="Short header — always visible" maxlength="120">
+        <textarea id="entry-body-input" placeholder="Details, context, reason… (optional — expands on tap)" rows="3"></textarea>
+        <div id="entry-row">
+          <select id="entry-type-select">
+            <option value="note">Note</option>
+            <option value="commitment">New Commitment</option>
+            <option value="action">Action Item</option>
+            <option value="deferral">Deferral</option>
+            <option value="completed">Completed Item</option>
+            <option value="prayer">Prayer / Reflection</option>
+          </select>
+          <button id="add-entry-btn" onclick="addCaptureEntry()">+ Add</button>
+        </div>
+      </div>
+      <div id="capture-list">
+        <div id="no-entries">No entries yet today. Tap above to capture anything on your mind.</div>
+      </div>
+    </div>
+
+    <!-- SUMMARY PANEL -->
+    <div id="panel-summary" class="panel">
+      <div id="summary-panel">
+        <h2>Day at a Glance</h2>
+        <div id="summary-stats"></div>
+        <div id="summary-blocks"></div>
+        <button id="summary-submit-btn" onclick="submitToSheets()">Send to Google Sheets ↗</button>
+        <div id="summary-submit-status"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div id="panel-settings" class="panel">
+      <div id="settings-panel">
+        <h2>Settings</h2>
+        <div class="settings-group">
+          <div class="settings-label">Google Sheets Connection</div>
+          <div class="settings-field">
+            <label>Apps Script Web App URL (Schedule)</label>
+            <input type="url" id="setting-schedule-url" placeholder="https://script.google.com/macros/s/…/exec">
+          </div>
+          <div class="settings-field">
+            <label>Apps Script Web App URL (Capture Log)</label>
+            <input type="url" id="setting-capture-url" placeholder="https://script.google.com/macros/s/…/exec">
+          </div>
+          <button class="settings-save-btn" onclick="saveSettings()">Save</button>
+          <p class="settings-note">Deploy two separate doPost() functions in your Apps Script, or use one function that routes by payload type. URLs are stored locally on this device.</p>
+        </div>
+        <div class="settings-group">
+          <div class="settings-label">About</div>
+          <p class="settings-note">TMH Daily Rhythm Tracker · v1.0<br>Companion to the TMH Workout Log.<br>Data flows to a separate Google Sheet.<br><br>"To Him alone be the glory." — TMH</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+// ─── SCHEDULE DATA ──────────────────────────────────────────────────────────
+// Keyed by day name. Each block: { time, activity, category, note (from schedule), id }
+
+const CATEGORY_COLORS = {
+  Spiritual:  'var(--cat-spiritual)',
+  Family:     'var(--cat-family)',
+  Writing:    'var(--cat-writing)',
+  Homestead:  'var(--cat-homestead)',
+  Health:     'var(--cat-health)',
+  Admin:      'var(--cat-admin)',
+  Church:     'var(--cat-church)',
+  Rest:       'var(--cat-rest)',
+  Flex:       'var(--cat-flex)',
+};
+
+function block(time, activity, category, note='') {
+  return { time, activity, category, note };
+}
+
+const SCHEDULES = {
+  Monday: [
+    block('7:30 AM',  'Wake — Coffee & Scripture',              'Spiritual', 'Currently in Isaiah'),
+    block('7:55 AM',  'Get dressed; wake children',            'Family'),
+    block('8:00 AM',  'Morning walk with C.A.',                'Health',    'Fixed anchor — skip only for illness/weather'),
+    block('8:30 AM',  'Josiah drop-off',                       'Family'),
+    block('8:45 AM',  'Morning prayer with Brandi',            'Spiritual', 'Before her workday begins'),
+    block('9:00 AM',  'Audiobook recording — Session 1',       'Writing',   '90–120 min; Ch. 21 onward'),
+    block('10:45 AM', 'Homestead / home maintenance work',     'Homestead', '90–120 min; see priority list'),
+    block('12:15 PM', 'Josiah pick-up',                        'Family'),
+    block('12:30 PM', 'Lunch + family presence',               'Family',    'Break fast: 4–6 eggs + carb source. Not a working lunch.'),
+    block('1:15 PM',  'School check-in / enrichment time',     'Family',    'Lili support; outdoor activity as weather allows'),
+    block('2:00 PM',  'Audiobook recording — Session 2',       'Writing',   '90–120 min'),
+    block('4:00 PM',  'Workout — Lower Body Day',              'Health',    '90–120 min; Day 1'),
+    block('5:45 PM',  'Dinner prep / family time',             'Family',    'Post-workout: protein + carbs + veg'),
+    block('7:00 PM',  'Evening family time',                   'Family',    'Games, conversation, individual connection'),
+    block('8:30 PM',  'Admin / publishing tasks',              'Admin',     '30 min max during social media fast'),
+    block('9:30 PM',  'Husband & wife time',                   'Family',    'Intentional presence with Brandi'),
+    block('11:00 PM', 'Lights out',                            'Rest'),
+  ],
+  Tuesday: [
+    block('7:30 AM',  'Wake — Coffee & Scripture',              'Spiritual'),
+    block('7:55 AM',  'Get dressed; wake children',            'Family'),
+    block('8:00 AM',  'Morning walk with C.A.',                'Health',    'Fixed anchor'),
+    block('8:45 AM',  'Morning prayer with Brandi',            'Spiritual'),
+    block('9:00 AM',  'Josiah drop-off (depart ~9:00)',        'Family',    '9:30 arrival'),
+    block('9:15 AM',  'Book 3 deep edits — Keys to the Captive Heart', 'Writing', 'Chapter-by-chapter revision'),
+    block('11:00 AM', 'Homestead / home maintenance work',     'Homestead', '90–120 min; active conditioning'),
+    block('12:45 PM', 'Lunch + family presence',               'Family'),
+    block('1:30 PM',  'School check-in / enrichment time',     'Family',    'More time available T/R'),
+    block('2:15 PM',  'Josiah pick-up',                        'Family'),
+    block('2:45 PM',  'Audiobook recording or writing flex',   'Writing',   'Use based on energy and priority'),
+    block('4:30 PM',  'Homestead or outdoor family activity',  'Homestead', 'Active recovery'),
+    block('6:00 PM',  'Dinner prep / family time',             'Family'),
+    block('7:00 PM',  'Evening family time',                   'Family'),
+    block('8:30 PM',  'Admin / publishing tasks',              'Admin',     '30 min max during social media fast'),
+    block('9:30 PM',  'Husband & wife time',                   'Family'),
+    block('11:00 PM', 'Lights out',                            'Rest'),
+  ],
+  Wednesday: [
+    block('7:30 AM',  'Wake — Coffee & Scripture',              'Spiritual'),
+    block('7:55 AM',  'Get dressed; wake children',            'Family'),
+    block('8:00 AM',  'Morning walk with C.A.',                'Health',    'Fixed anchor'),
+    block('8:30 AM',  'Josiah drop-off',                       'Family'),
+    block('8:45 AM',  'Morning prayer with Brandi',            'Spiritual', 'Before her workday begins'),
+    block('9:00 AM',  'Audiobook recording — Session 1',       'Writing',   '90–120 min; Ch. 21 onward'),
+    block('10:45 AM', 'Homestead / home maintenance work',     'Homestead', '90–120 min'),
+    block('12:15 PM', 'Josiah pick-up',                        'Family'),
+    block('12:30 PM', 'Lunch + family presence',               'Family',    'Break fast. Not a working lunch.'),
+    block('1:15 PM',  'School check-in / enrichment time',     'Family',    'Lili support'),
+    block('2:00 PM',  'Workout — open question',               'Health',    'Hard stop 4:00 PM; resolve in fitness session'),
+    block('4:30 PM',  'Kids\' dinner',                         'Family',    'Tim & Brandi depart 5:00 PM'),
+    block('5:00 PM',  'Depart for Awana',                      'Church',    'Brandi: club secretary; Tim: Awana leader'),
+    block('9:30 PM',  'Home from Awana — decompress & rest',   'Rest',      'No evening work block'),
+    block('11:00 PM', 'Lights out',                            'Rest'),
+  ],
+  Thursday: [
+    block('7:30 AM',  'Wake — Coffee & Scripture',              'Spiritual'),
+    block('7:55 AM',  'Get dressed; wake children',            'Family'),
+    block('8:00 AM',  'Morning walk with C.A.',                'Health',    'Fixed anchor'),
+    block('8:45 AM',  'Morning prayer with Brandi',            'Spiritual'),
+    block('9:00 AM',  'Josiah drop-off (depart ~9:00)',        'Family',    '9:30 arrival'),
+    block('9:15 AM',  'Book 3 deep edits — Keys to the Captive Heart', 'Writing', 'Chapter-by-chapter revision'),
+    block('11:00 AM', 'Homestead / home maintenance work',     'Homestead', '90–120 min; active conditioning'),
+    block('12:45 PM', 'Lunch + family presence',               'Family'),
+    block('1:30 PM',  'School check-in / enrichment time',     'Family'),
+    block('2:15 PM',  'Josiah pick-up',                        'Family',    'Thursday only'),
+    block('2:45 PM',  'Audiobook recording or writing flex',   'Writing',   'Use based on energy and priority'),
+    block('4:00 PM',  'Workout — Core Day',                    'Health',    '90–120 min; Day 2'),
+    block('6:00 PM',  'Dinner prep / family time',             'Family'),
+    block('7:00 PM',  'Evening family time',                   'Family'),
+    block('8:30 PM',  'Admin / publishing tasks',              'Admin',     '30 min max during social media fast'),
+    block('9:30 PM',  'Husband & wife time',                   'Family'),
+    block('11:00 PM', 'Lights out',                            'Rest'),
+  ],
+  Friday: [
+    block('7:30 AM',  'Wake — Coffee & Scripture',              'Spiritual', 'Currently in Isaiah'),
+    block('7:55 AM',  'Get dressed; wake children',            'Family'),
+    block('8:00 AM',  'Morning walk with C.A.',                'Health',    'Fixed anchor'),
+    block('8:30 AM',  'Josiah drop-off',                       'Family'),
+    block('8:45 AM',  'Morning prayer with Brandi',            'Spiritual', 'Before her workday begins'),
+    block('9:00 AM',  'Audiobook recording — Session 1',       'Writing',   '90–120 min; Ch. 21 onward'),
+    block('10:45 AM', 'Homestead / home maintenance work',     'Homestead', '90–120 min; see priority list'),
+    block('12:15 PM', 'Josiah pick-up',                        'Family'),
+    block('12:30 PM', 'Lunch + family presence',               'Family',    'Break fast. Not a working lunch.'),
+    block('1:15 PM',  'School check-in / enrichment time',     'Family',    'Lili support; outdoor activity as weather allows'),
+    block('2:00 PM',  'Audiobook recording — Session 2 or Book 3 edits', 'Writing', '90–120 min'),
+    block('4:00 PM',  'Homestead / flex time',                 'Homestead', 'Active recovery — subject to schedule calibration'),
+    block('5:45 PM',  'Dinner prep / family time',             'Family'),
+    block('7:00 PM',  'Evening family time',                   'Family',    'Games, conversation, individual connection'),
+    block('8:30 PM',  'Admin / publishing tasks',              'Admin',     '30 min max during social media fast'),
+    block('9:30 PM',  'Husband & wife time',                   'Family',    'Intentional presence with Brandi'),
+    block('11:00 PM', 'Lights out',                            'Rest'),
+  ],
+  Saturday: [
+    block('7:30 AM',  'Wake — Coffee & Scripture',              'Spiritual', 'No school, no drop-offs'),
+    block('8:30 AM',  'Family breakfast — unhurried',          'Family',    'Intentional rhythm, not rushed'),
+    block('9:30 AM',  'Homestead project work',                'Homestead', 'Chicken run, garden, dog training, maintenance'),
+    block('11:30 AM', 'Workout — Upper Body Day',              'Health',    '90–120 min; Day 3'),
+    block('1:00 PM',  'Lunch',                                 'Family'),
+    block('2:00 PM',  'Family activity / individual child time','Family',   'One-on-one or group outing; rotate children'),
+    block('4:30 PM',  'Writing flex / catch-up block',         'Writing',   'Optional; protect family time'),
+    block('6:00 PM',  'Dinner',                                'Family'),
+    block('7:30 PM',  'Marriage time — date night',            'Family',    'Weekly priority; even at home'),
+    block('11:00 PM', 'Lights out',                            'Rest'),
+  ],
+  Sunday: [
+    block('7:30 AM',  'Wake — Coffee & Scripture',              'Spiritual'),
+    block('8:30 AM',  'Family breakfast & Sabbath preparation','Family',    'Unhurried'),
+    block('9:30 AM',  'Sunday School — full family',           'Church'),
+    block('10:30 AM', 'Sunday morning service — full family',  'Church'),
+    block('12:00 PM', 'Lunch — family meal',                   'Family'),
+    block('1:00 PM',  'Sabbath rest',                          'Rest',      'Nap, reading, quiet — protect this time'),
+    block('3:00 PM',  'Family time — games, outdoors, conversation', 'Family'),
+    block('5:30 PM',  'Dinner',                                'Family'),
+    block('7:00 PM',  'Sunday evening — BOUNDARY REVIEW',      'Church',    'Attend as led; protect family restoration'),
+    block('9:30 PM',  'Husband & wife time',                   'Family'),
+    block('11:00 PM', 'Lights out',                            'Rest'),
+  ],
+};
+
+const CAPTURE_TYPES = {
+  note:        { label: 'Note',       color: '#6b5f57' },
+  commitment:  { label: 'Commitment', color: '#2a4a6b' },
+  action:      { label: 'Action',     color: '#7a5a2a' },
+  deferral:    { label: 'Deferral',   color: '#6b4a7a' },
+  completed:   { label: 'Completed',  color: '#3a6b4a' },
+  prayer:      { label: 'Prayer',     color: '#7a2a4a' },
+};
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let today = new Date();
+let dayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][today.getDay()];
+
+// blockStates[i] = { status: 'pending'|'completed'|'cancelled'|'deferred', note: '' }
+let blockStates = [];
+let captureEntries = []; // { id, timestamp, type, header, body }
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+function init() {
+  updateDateDisplay();
+  loadFromStorage();
+  renderSchedule();
+  renderCaptureList();
+  renderSummary();
+}
+
+function updateDateDisplay() {
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('date-day').textContent = days[today.getDay()];
+  document.getElementById('date-full').textContent =
+    months[today.getMonth()] + ' ' + today.getDate() + ', ' + today.getFullYear();
+  document.getElementById('schedule-day-label').textContent = dayName + ' rhythm';
+}
+
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+function storageKey() {
+  return 'tmh-rhythm-' + today.toISOString().slice(0,10);
+}
+function captureKey() {
+  return 'tmh-capture-' + today.toISOString().slice(0,10);
+}
+function settingsKey() { return 'tmh-rhythm-settings'; }
+
+function loadFromStorage() {
+  // block states
+  const saved = localStorage.getItem(storageKey());
+  const blocks = SCHEDULES[dayName] || [];
+  if (saved) {
+    blockStates = JSON.parse(saved);
+    // pad if schedule changed
+    while (blockStates.length < blocks.length) blockStates.push({ status:'pending', note:'' });
+  } else {
+    blockStates = blocks.map(() => ({ status:'pending', note:'' }));
+  }
+  // capture entries
+  const cap = localStorage.getItem(captureKey());
+  captureEntries = cap ? JSON.parse(cap) : [];
+
+  // settings
+  const s = localStorage.getItem(settingsKey());
+  if (s) {
+    const obj = JSON.parse(s);
+    document.getElementById('setting-schedule-url').value = obj.scheduleUrl || '';
+    document.getElementById('setting-capture-url').value = obj.captureUrl || '';
+  }
+}
+
+function saveBlockStates() {
+  localStorage.setItem(storageKey(), JSON.stringify(blockStates));
+}
+function saveCaptureEntries() {
+  localStorage.setItem(captureKey(), JSON.stringify(captureEntries));
+}
+
+// ─── TAB NAVIGATION ──────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'summary') renderSummary();
+}
+
+// ─── SCHEDULE RENDERING ───────────────────────────────────────────────────────
+function renderSchedule() {
+  const blocks = SCHEDULES[dayName] || [];
+  const list = document.getElementById('block-list');
+  list.innerHTML = '';
+
+  blocks.forEach((b, i) => {
+    const state = blockStates[i];
+    const card = document.createElement('div');
+    card.className = 'block-card ' + (state.status !== 'pending' ? state.status : '');
+    card.id = 'block-' + i;
+
+    const catColor = CATEGORY_COLORS[b.category] || 'var(--ink-pale)';
+
+    card.innerHTML = `
+      <div class="block-main" onclick="toggleBlockNote(${i})">
+        <div class="block-cat-bar" style="background:${catColor}"></div>
+        <div class="block-body">
+          <div class="block-time">${b.time}</div>
+          <div class="block-activity">${b.activity}</div>
+          <div class="block-category-tag" style="color:${catColor}">${b.category}</div>
+        </div>
+        <div class="block-status-row" onclick="event.stopPropagation()">
+          <button class="status-icon done-btn ${state.status==='completed'?'active':''}"
+            onclick="setStatus(${i},'completed')" title="Completed">✓</button>
+          <button class="status-icon cancel-btn ${state.status==='cancelled'?'active':''}"
+            onclick="setStatus(${i},'cancelled')" title="Cancelled">✕</button>
+          <button class="status-icon defer-btn ${state.status==='deferred'?'active':''}"
+            onclick="setStatus(${i},'deferred')" title="Deferred">↷</button>
+        </div>
+      </div>
+      <div class="block-note-area" id="note-area-${i}">
+        <div class="block-note-label">Note</div>
+        ${b.note ? `<div class="block-original-note">Schedule: ${b.note}</div>` : ''}
+        <textarea class="block-note-input" placeholder="Add a note…" 
+          oninput="updateNote(${i}, this.value)">${state.note}</textarea>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  updateCompletionPill();
+}
+
+function toggleBlockNote(i) {
+  const area = document.getElementById('note-area-' + i);
+  area.classList.toggle('open');
+}
+
+function setStatus(i, status) {
+  // toggle off if already set
+  if (blockStates[i].status === status) {
+    blockStates[i].status = 'pending';
+  } else {
+    blockStates[i].status = status;
+    // auto-open note for cancelled/deferred
+    if (status === 'cancelled' || status === 'deferred') {
+      document.getElementById('note-area-' + i).classList.add('open');
+    }
+  }
+  saveBlockStates();
+  // update card class
+  const card = document.getElementById('block-' + i);
+  card.className = 'block-card ' + (blockStates[i].status !== 'pending' ? blockStates[i].status : '');
+  // update button active states
+  card.querySelectorAll('.status-icon').forEach(btn => btn.classList.remove('active'));
+  if (blockStates[i].status !== 'pending') {
+    const map = { completed: 'done-btn', cancelled: 'cancel-btn', deferred: 'defer-btn' };
+    card.querySelector('.' + map[blockStates[i].status])?.classList.add('active');
+  }
+  updateCompletionPill();
+}
+
+function updateNote(i, val) {
+  blockStates[i].note = val;
+  saveBlockStates();
+}
+
+function updateCompletionPill() {
+  const done = blockStates.filter(s => s.status === 'completed').length;
+  const total = blockStates.length;
+  document.getElementById('completion-pill').textContent = `${done} / ${total} done`;
+}
+
+// ─── SCHEDULE SUBMIT ─────────────────────────────────────────────────────────
+function submitDaySummary() {
+  showTab('summary');
+  // switch tab visually
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', i === 2);
+  });
+}
+
+// ─── CAPTURE LOG ──────────────────────────────────────────────────────────────
+function addCaptureEntry() {
+  const header = document.getElementById('entry-header-input').value.trim();
+  if (!header) {
+    document.getElementById('entry-header-input').focus();
+    return;
+  }
+  const body = document.getElementById('entry-body-input').value.trim();
+  const type = document.getElementById('entry-type-select').value;
+  const entry = {
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    type,
+    header,
+    body,
+  };
+  captureEntries.unshift(entry);
+  saveCaptureEntries();
+  document.getElementById('entry-header-input').value = '';
+  document.getElementById('entry-body-input').value = '';
+  renderCaptureList();
+}
+
+function renderCaptureList() {
+  const list = document.getElementById('capture-list');
+  const badge = document.getElementById('capture-badge');
+
+  if (captureEntries.length === 0) {
+    list.innerHTML = '<div id="no-entries">No entries yet today. Tap above to capture anything on your mind.</div>';
+    badge.style.display = 'none';
+    return;
+  }
+
+  badge.style.display = 'inline';
+  badge.textContent = captureEntries.length;
+
+  list.innerHTML = '';
+  captureEntries.forEach(entry => {
+    const typeInfo = CAPTURE_TYPES[entry.type] || CAPTURE_TYPES.note;
+    const time = new Date(entry.timestamp);
+    const timeStr = time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+    const div = document.createElement('div');
+    div.className = 'capture-entry';
+    div.innerHTML = `
+      <div class="entry-top" onclick="toggleCaptureEntry(${entry.id})">
+        <div class="entry-type-dot" style="background:${typeInfo.color}"></div>
+        <div class="entry-header-text">${escHtml(entry.header)}</div>
+        <div class="entry-meta">${timeStr}</div>
+        ${entry.body ? `<div class="entry-chevron" id="chev-${entry.id}">▾</div>` : '<div style="width:16px"></div>'}
+      </div>
+      ${entry.body ? `
+      <div class="entry-body" id="body-${entry.id}">
+        <span class="entry-type-label" style="background:${typeInfo.color}22;color:${typeInfo.color}">${typeInfo.label}</span><br>
+        ${escHtml(entry.body).replace(/\n/g,'<br>')}
+        <br><button class="entry-delete" onclick="deleteEntry(${entry.id})">delete</button>
+      </div>` : `
+      <div class="entry-body" id="body-${entry.id}">
+        <span class="entry-type-label" style="background:${typeInfo.color}22;color:${typeInfo.color}">${typeInfo.label}</span>
+        <br><button class="entry-delete" onclick="deleteEntry(${entry.id})">delete</button>
+      </div>`}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function toggleCaptureEntry(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('chev-' + id);
+  if (body) body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
+}
+
+function deleteEntry(id) {
+  captureEntries = captureEntries.filter(e => e.id !== id);
+  saveCaptureEntries();
+  renderCaptureList();
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── SUMMARY ──────────────────────────────────────────────────────────────────
+function renderSummary() {
+  const blocks = SCHEDULES[dayName] || [];
+  const done = blockStates.filter(s => s.status === 'completed').length;
+  const cancelled = blockStates.filter(s => s.status === 'cancelled').length;
+  const deferred = blockStates.filter(s => s.status === 'deferred').length;
+  const pending = blockStates.filter(s => s.status === 'pending').length;
+
+  document.getElementById('summary-stats').innerHTML = `
+    <div class="summary-stat"><span class="summary-stat-label">Day</span><span class="summary-stat-value">${dayName}</span></div>
+    <div class="summary-stat"><span class="summary-stat-label">Date</span><span class="summary-stat-value">${today.toLocaleDateString()}</span></div>
+    <div class="summary-stat"><span class="summary-stat-label">Completed</span><span class="summary-stat-value" style="color:var(--green)">${done}</span></div>
+    <div class="summary-stat"><span class="summary-stat-label">Cancelled</span><span class="summary-stat-value" style="color:var(--red-mark)">${cancelled}</span></div>
+    <div class="summary-stat"><span class="summary-stat-label">Deferred</span><span class="summary-stat-value" style="color:var(--blue-mark)">${deferred}</span></div>
+    <div class="summary-stat"><span class="summary-stat-label">Not logged</span><span class="summary-stat-value" style="color:var(--ink-pale)">${pending}</span></div>
+    <div class="summary-stat"><span class="summary-stat-label">Capture entries</span><span class="summary-stat-value">${captureEntries.length}</span></div>
+  `;
+
+  let blocksHtml = '';
+  const groups = [
+    { label: 'Cancelled', filter: 'cancelled' },
+    { label: 'Deferred', filter: 'deferred' },
+    { label: 'Completed', filter: 'completed' },
+    { label: 'Not Logged', filter: 'pending' },
+  ];
+
+  groups.forEach(g => {
+    const matching = blocks.map((b,i)=>({b,i})).filter(({i}) => blockStates[i].status === g.filter);
+    if (matching.length === 0) return;
+    blocksHtml += `<div class="summary-section">${g.label}</div>`;
+    matching.forEach(({b,i}) => {
+      const state = blockStates[i];
+      const badgeClass = `badge-${state.status === 'pending' ? 'pending' : state.status}`;
+      const noteHtml = state.note
+        ? `<div class="summary-block-note">"${escHtml(state.note)}"</div>` : '';
+      blocksHtml += `
+        <div class="summary-block-row">
+          <span class="summary-status-badge ${badgeClass}">${state.status === 'pending' ? '—' : state.status}</span>
+          <div><div class="summary-block-name">${b.time} · ${b.activity}</div>${noteHtml}</div>
+        </div>`;
+    });
+  });
+
+  document.getElementById('summary-blocks').innerHTML = blocksHtml;
+}
+
+// ─── SEND TO SHEETS ───────────────────────────────────────────────────────────
+async function submitToSheets() {
+  const s = localStorage.getItem(settingsKey());
+  const settings = s ? JSON.parse(s) : {};
+  const scheduleUrl = settings.scheduleUrl || '';
+  const captureUrl  = settings.captureUrl  || '';
+
+  if (!scheduleUrl && !captureUrl) {
+    document.getElementById('summary-submit-status').textContent = 'No Apps Script URL configured — go to Settings.';
+    return;
+  }
+
+  const btn = document.getElementById('summary-submit-btn');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  const blocks = SCHEDULES[dayName] || [];
+  const payload = {
+    type: 'daily_summary',
+    date: today.toISOString().slice(0,10),
+    day: dayName,
+    submittedAt: new Date().toISOString(),
+    blocks: blocks.map((b,i) => ({
+      time: b.time,
+      activity: b.activity,
+      category: b.category,
+      status: blockStates[i].status,
+      note: blockStates[i].note,
+    })),
+    captureEntries: captureEntries,
+    stats: {
+      completed: blockStates.filter(s=>s.status==='completed').length,
+      cancelled: blockStates.filter(s=>s.status==='cancelled').length,
+      deferred:  blockStates.filter(s=>s.status==='deferred').length,
+      pending:   blockStates.filter(s=>s.status==='pending').length,
+      captureCount: captureEntries.length,
+    }
+  };
+
+  const statusEl = document.getElementById('summary-submit-status');
+  let successCount = 0, errorCount = 0;
+
+  const urls = [];
+  if (scheduleUrl) urls.push({ url: scheduleUrl, label: 'schedule' });
+  if (captureUrl && captureUrl !== scheduleUrl) urls.push({ url: captureUrl, label: 'capture' });
+  if (!urls.length && scheduleUrl) urls.push({ url: scheduleUrl, label: 'all data' });
+
+  for (const { url } of urls) {
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      successCount++;
+    } catch(e) {
+      errorCount++;
+    }
+  }
+
+  btn.textContent = 'Send to Google Sheets ↗';
+  btn.disabled = false;
+
+  if (errorCount === 0) {
+    statusEl.textContent = '✓ Sent — ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  } else if (successCount > 0) {
+    statusEl.textContent = 'Partially sent. Check your Apps Script logs.';
+  } else {
+    statusEl.textContent = 'Send failed. Check your URL and connection.';
+  }
+}
+
+// ─── SETTINGS ────────────────────────────────────────────────────────────────
+function saveSettings() {
+  const obj = {
+    scheduleUrl: document.getElementById('setting-schedule-url').value.trim(),
+    captureUrl:  document.getElementById('setting-capture-url').value.trim(),
+  };
+  localStorage.setItem(settingsKey(), JSON.stringify(obj));
+  alert('Settings saved.');
+}
+
+// ─── BOOT ────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
